@@ -45,30 +45,41 @@ pluginCrossBuild / sbtVersion := {
 
 // scalac and scaladoc options
 autoAPIMappings := true
+scalacOptions := {
+  val curOptions = scalacOptions.value
+
+  scalaBinaryVersion.value match {
+    case "2.12" =>
+      // options for 2.12 come mostly from com.evolution:sbt-scalac-opts-plugin:0.0.9
+      curOptions ++ Seq(
+        "-Xsource:3",
+      )
+
+    case "3" =>
+      // Discarding scalacOptions coming from com.evolution:sbt-scalac-opts-plugin:0.0.9,
+      // because it adds an option which fails compilation on 3.8.2:
+      //
+      //  [warn] Option -Xfatal-warnings is a deprecated alias: use -Werror instead
+      //  [error] No warnings can be incurred under -Werror
+      //  [warn] one warning found
+      //  [error] one error found
+      Seq(
+        "-Xkind-projector:underscores",
+
+        // disable new brace-less syntax:
+        // https://alexn.org/blog/2022/10/24/scala-3-optional-braces/
+        "-no-indent",
+
+        // improve error messages:
+        "-explain",
+        "-explain-types",
+      )
+  }
+}
+// common options
 scalacOptions ++= Seq(
   "-release:17", // sbt 2 requires JDK 17+
   "-deprecation",
-)
-scalacOptions ++= crossSettings(
-  scalaVersion = scalaVersion.value,
-  if2 = Seq(
-    "-Xsource:3",
-  ),
-  // Good compiler options for Scala 2.12 are coming from com.evolution:sbt-scalac-opts-plugin:0.0.9,
-  // but its support for Scala 3 is limited, especially what concerns linting options.
-  //
-  // If Scala 3 is made the primary target, good linting scalac options for it should be added first.
-  if3 = Seq(
-    "-Xkind-projector:underscores",
-
-    // disable new brace-less syntax:
-    // https://alexn.org/blog/2022/10/24/scala-3-optional-braces/
-    "-no-indent",
-
-    // improve error messages:
-    "-explain",
-    "-explain-types",
-  ),
 )
 
 libraryDependencies += "org.scalameta" %% "munit" % "1.3.0" % Test
@@ -88,10 +99,3 @@ scriptedLaunchOpts ++= Seq(
 addCommandAlias("fmt", "+all scalafmtAll scalafmtSbt")
 addCommandAlias("buildFast", "+all scalafmtCheckAll scalafmtSbtCheck versionPolicyCheck Compile/doc test")
 addCommandAlias("buildFull", "; buildFast; +scripted")
-
-def crossSettings[T](scalaVersion: String, if3: T, if2: T): T = {
-  scalaVersion match {
-    case version if version.startsWith("3") => if3
-    case _ => if2
-  }
-}

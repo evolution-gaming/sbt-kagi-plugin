@@ -1,0 +1,9 @@
+# Write the lock file, verify check passes
+> kagiDependencyLockWrite
+> kagiDependencyLockCheck
+
+# Delete the lock file to create a mismatch
+> eval IO.delete(file("dependency-lock/root.lock.txt"))
+
+# Check should now fail because current deps don't match empty lock
+-> kagiDependencyLockCheck

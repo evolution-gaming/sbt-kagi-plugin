@@ -1,0 +1,2 @@
+# Check should fail when no lock file exists (project has dependencies but lock file is empty)
+-> kagiDependencyLockCheck
