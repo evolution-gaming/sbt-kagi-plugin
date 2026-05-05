@@ -9,11 +9,16 @@ import java.nio.file.Files
 
 object KagiPlugin extends AutoPlugin {
 
+  // TODO: WIP review the scripted tests
+  // TODO: WIP review the README example code
+
   object autoImport {
     val kagiDependencyLockDir: SettingKey[File] = settingKey(
       "FIXME",
     )
-    // TODO: WIP make concrete project lock file name configurable (multiple Scala versions?)
+    val kagiDependencyLockFile: SettingKey[File] = settingKey(
+      "FIXME",
+    )
     val kagiDependencyLockClasspath: SettingKey[Configuration] = settingKey(
       "Configuration used to resolve the dependency classpath for lock file generation. Defaults to Runtime.",
     )
@@ -31,52 +36,48 @@ object KagiPlugin extends AutoPlugin {
     // Provide default values in globalSettings:
     // https://www.scala-sbt.org/1.x/docs/Plugins-Best-Practices.html#Provide+default+values+in
 
-    kagiDependencyLockDir := {
-      val dir = (ThisBuild / baseDirectory).value / "dependency-lock"
-      Files.createDirectories(dir.toPath)
-      dir
-    },
+    kagiDependencyLockDir := (ThisBuild / baseDirectory).value / "dependency-lock",
     kagiDependencyLockClasspath := Runtime,
   )
 
   override lazy val projectSettings: Seq[Setting[?]] = Seq(
+    kagiDependencyLockFile := {
+      val dir = kagiDependencyLockDir.value
+      val projectName = thisProject.value.id
+      dir / s"$projectName.lock.txt"
+    },
     kagiDependencyLockWrite := kagiDependencyLockWriteTask.value,
     kagiDependencyLockCheck := kagiDependencyLockCheckTask.value,
   )
 
-  private final case class ProjectCtx(
-    dependencySet: KagiDependencySet,
-    dependencyLockFile: File,
-  )
-
-  private lazy val kagiDependencyLockCtxTask: Def.Initialize[Task[ProjectCtx]] = Def.taskDyn {
+  private lazy val kagiDependencySetTask: Def.Initialize[Task[KagiDependencySet]] = Def.taskDyn {
     val config = kagiDependencyLockClasspath.value
-    val projectName = thisProject.value.id
-    val lockDir = kagiDependencyLockDir.value
 
     Def.task {
-      val dependencySet = KagiDependencySet.from(
+      KagiDependencySet.from(
         (config / externalDependencyClasspath).value.view.map(extractDependency),
       )
-
-      val lockFile = lockDir / s"$projectName.lock.txt"
-
-      ProjectCtx(dependencySet, lockFile)
     }
   }
 
   private lazy val kagiDependencyLockWriteTask: Def.Initialize[Task[Unit]] = Def.task {
-    val ctx = kagiDependencyLockCtxTask.value
-    KagiLockFile.write(ctx.dependencyLockFile.toPath, ctx.dependencySet)
+    val lockFile = kagiDependencyLockFile.value
+    // ensure the lock file directory exists
+    Option(lockFile.toPath.getParent).foreach { parentDir =>
+      Files.createDirectories(parentDir)
+    }
+    val dependencySet = kagiDependencySetTask.value
+    KagiLockFile.write(lockFile.toPath, dependencySet)
   }
 
   private lazy val kagiDependencyLockCheckTask: Def.Initialize[Task[Unit]] = Def.task {
-    val ctx = kagiDependencyLockCtxTask.value
+    val lockFile = kagiDependencyLockFile.value
+    val dependencySet = kagiDependencySetTask.value
     val logger = streams.value.log
-    val lockFileDependencySet = KagiLockFile.read(ctx.dependencyLockFile.toPath)
+    val lockFileDependencySet = KagiLockFile.read(lockFile.toPath)
 
-    if (ctx.dependencySet != lockFileDependencySet) {
-      val diff = ctx.dependencySet.diffFrom(lockFileDependencySet)
+    if (dependencySet != lockFileDependencySet) {
+      val diff = dependencySet.diffFrom(lockFileDependencySet)
       val diffText = diff.iterator.map {
         case (dependency, diffElem) => diffElem match {
             case DiffElem.Added =>
@@ -92,7 +93,7 @@ object KagiPlugin extends AutoPlugin {
         "Run kagiDependencyLockWrite to update the lock files and commit changes to make them visible in your VCS!"
 
       val headerMsgLine =
-        s"dependency lock file not in sync - ${ diff.size } changes: ${ ctx.dependencyLockFile }"
+        s"dependency lock file not in sync - ${ diff.size } changes: $lockFile"
 
       logger.error(s"$headerMsgLine\n$diffText")
 

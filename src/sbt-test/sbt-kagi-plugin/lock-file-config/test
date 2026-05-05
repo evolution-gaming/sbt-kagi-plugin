@@ -1,0 +1,11 @@
+# Write the dependency lock file to a custom location via kagiDependencyLockFile
+> kagiDependencyLockWrite
+
+# Verify the lock file was written to the custom path (not the default name)
+$ exists custom-locks/my-custom.lock.txt
+
+# Verify the default file name was NOT used
+-$ exists custom-locks/lock-file-config.lock.txt
+
+# Check passes against the custom lock file
+> kagiDependencyLockCheck

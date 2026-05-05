@@ -264,6 +264,10 @@ git tag -d v1.2.3
 
   Directory where lock files are stored. Defaults to `dependency-lock/` at the build root.
 
+* `kagiDependencyLockFile: SettingKey[File]`
+
+  Path to the lock file for the current module. Defaults to `<kagiDependencyLockDir>/<module-name>.lock.txt`.
+
 * `kagiDependencyLockClasspath: SettingKey[Configuration]`
 
   Configuration used to resolve the dependency classpath for lock file generation. Defaults to `Runtime`.
