@@ -13,6 +13,7 @@ object KagiPlugin extends AutoPlugin {
     val kagiDependencyLockDir: SettingKey[File] = settingKey(
       "FIXME",
     )
+    // TODO: WIP make concrete project lock file name configurable (multiple Scala versions?)
     val kagiDependencyLockClasspath: SettingKey[Configuration] = settingKey(
       "Configuration used to resolve the dependency classpath for lock file generation. Defaults to Runtime.",
     )
