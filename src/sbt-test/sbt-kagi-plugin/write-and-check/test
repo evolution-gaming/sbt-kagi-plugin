@@ -1,3 +1,0 @@
-# Write the dependency lock file, then check it matches
-> kagiDependencyLockWrite
-> kagiDependencyLockCheck

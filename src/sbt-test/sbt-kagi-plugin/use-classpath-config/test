@@ -3,8 +3,13 @@
 > kagiDependencyLockCheck
 
 # Verify guava is NOT in the lock file (it's Runtime-only, we locked Compile)
--$ contains dependency-lock/root.lock.txt com.google.guava
+$ must-mirror dependency-lock/root.lock.txt test-lock-files/without-guava.lock.txt
 
 # Now switch to Runtime classpath and verify the lock is out of sync
 > set kagiDependencyLockClasspath := Runtime
 -> kagiDependencyLockCheck
+
+# Write the lock file and check that guava is there
+> kagiDependencyLockWrite
+$ must-mirror dependency-lock/root.lock.txt test-lock-files/with-guava.lock.txt
+> kagiDependencyLockCheck

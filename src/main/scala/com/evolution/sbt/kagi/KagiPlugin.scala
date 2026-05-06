@@ -30,7 +30,6 @@ import java.nio.file.Files
  */
 object KagiPlugin extends AutoPlugin {
 
-  // TODO: WIP review the scripted tests
   // TODO: WIP review the README example code
 
   object autoImport {

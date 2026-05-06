@@ -1,0 +1,14 @@
+# Write the dependency lock files
+> kagiDependencyLockWrite
+
+# Verify the lock file was written to the custom directory for the first module
+$ exists custom-locks/moduleWithDefaultFile.lock.txt
+-$ exists dependency-lock/moduleWithDefaultFile.lock.txt
+
+# Verify the lock file was written to the custom file for the second module
+$ exists module-with-custom-file-1.lock.txt
+-$ exists dependency-lock/moduleWithCustomFile.lock.txt
+-$ exists custom-locks/moduleWithCustomFile.lock.txt
+
+# Check passes against the custom lock files
+> kagiDependencyLockCheck

@@ -1,0 +1,30 @@
+# Check should fail on missing lock files
+-> kagiDependencyLockCheck
+
+# Write the lock files, verify check passes
+> kagiDependencyLockWrite
+> kagiDependencyLockCheck
+
+# Check that lock files are not created for modules, where the plugin is not enabled explicitly
+-$ exists dependency-lock/root.lock.txt
+-$ exists dependency-lock/libModule.lock.txt
+
+# Check that lock files are present and in order for the modules, where the plugin is enabled
+$ must-mirror dependency-lock/svc1Module.lock.txt test-lock-files/svc1Module.lock.txt
+$ must-mirror dependency-lock/svc2Module.lock.txt test-lock-files/svc2Module.lock.txt
+
+# Change the dependencies for the first service module
+> set svc1Module / libraryDependencies += "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % "2.38.9"
+
+# Check command should fail now
+-> kagiDependencyLockCheck
+
+# Write the lock files, verify check passes
+> kagiDependencyLockWrite
+> kagiDependencyLockCheck
+
+# Check that lock file has been updated for the first service module
+$ must-mirror dependency-lock/svc1Module.lock.txt test-lock-files/new.svc1Module.lock.txt
+
+# Check that lock file stayed the same for the seconds service module
+$ must-mirror dependency-lock/svc2Module.lock.txt test-lock-files/svc2Module.lock.txt
