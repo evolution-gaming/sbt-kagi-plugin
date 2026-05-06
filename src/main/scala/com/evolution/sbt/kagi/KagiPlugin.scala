@@ -7,6 +7,27 @@ import sbt.Keys.*
 
 import java.nio.file.Files
 
+/**
+ * Simple sbt plugin for working with dependency lock files.
+ *
+ * The main focus is on the ease of use, readability and diff-friendliness of the lock
+ * file format.
+ *
+ * Enable the plugin explicitly on the modules, for which you want to track dependencies.
+ *
+ * Run the [[autoImport.kagiDependencyLockWrite]] task to generate the lock files.
+ *
+ * Run the [[autoImport.kagiDependencyLockCheck]] task to verify that the actual
+ * dependency sets match the lock files.
+ *
+ * Commit the lock files to your VCS and run [[autoImport.kagiDependencyLockCheck]] on
+ * each build, to make sure the changes in dependencies are visible in your MRs/PRs.
+ *
+ * Check out the project README for more details!
+ *
+ * @see
+ *   [[https://github.com/evolution-gaming/sbt-kagi-plugin]]
+ */
 object KagiPlugin extends AutoPlugin {
 
   // TODO: WIP review the scripted tests

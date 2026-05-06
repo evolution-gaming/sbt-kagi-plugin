@@ -2,6 +2,20 @@ package com.evolution.sbt.kagi
 
 import sbt.*
 
+/**
+ * [[KagiPlugin]] data model - coordinates which identify a dependency.
+ *
+ * The field names match the Maven data model.
+ *
+ * Ordered by groupId -> artifactId -> version (as strings, lexicographically).
+ *
+ * All coordinate fields must conform to this format, which is a relaxed version of the
+ * Maven requirements:
+ *   - alphanumeric and punctuation characters without `':'`
+ *
+ * @see
+ *   [[https://maven.apache.org/guides/mini/guide-naming-conventions.html]]
+ */
 private[kagi] final case class KagiDependency(
   groupId: String,
   artifactId: String,
@@ -22,6 +36,11 @@ private[kagi] final case class KagiDependency(
     s"version must $DependencyCoordinateRegexDescr, got '$version'",
   )
 
+  /**
+   * String representation for the [[KagiLockFile]] format.
+   *
+   * Matches the format expected by [[KagiDependency.parse]].
+   */
   override def toString: String = s"$groupId:$artifactId:$version"
 }
 
@@ -41,6 +60,11 @@ private[kagi] object KagiDependency {
     )
   }
 
+  /**
+   * Parses the [[KagiDependency]] string representation from the [[KagiLockFile]] format.
+   *
+   * Works with the format produced by [[KagiDependency.toString]].
+   */
   def parse(str: String): KagiDependency = {
     val tokens = str.split(":", 3)
     require(tokens.length == 3, "expected 3 elements separated by ':'")

@@ -4,6 +4,17 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.*
 import scala.jdk.CollectionConverters.*
 
+/**
+ * Module dependency lock file format for [[KagiPlugin]].
+ *
+ * The file consists of
+ *   - dependency coordinates (one per line): `<groupId>:<artifactId>:<version>`
+ *   - empty lines - ignored
+ *   - comment lines starting with `'#'` - ignored
+ *
+ * For readability, dependencies are sorted and grouped into sections by `groupId`,
+ * separated with a comment and a newline.
+ */
 private[kagi] object KagiLockFile {
 
   private val Header: String =
@@ -12,6 +23,11 @@ private[kagi] object KagiLockFile {
       |# DO NOT EDIT MANUALLY!
       |""".stripMargin
 
+  /**
+   * Writes a module dependency set to a lock file.
+   *
+   * Fails if the directory path to the file doesn't exist.
+   */
   def write(filePath: Path, dependencySet: KagiDependencySet): Unit = {
     val textBuilder = new StringBuilder(
       Header.length + dependencySet.size * 64, // good-enough heuristic
@@ -36,6 +52,11 @@ private[kagi] object KagiLockFile {
     ()
   }
 
+  /**
+   * Reads a dependency set from a lock file.
+   *
+   * If the lock file doesn't exist, an empty set is returned.
+   */
   def read(filePath: Path): KagiDependencySet = {
     if (Files.notExists(filePath)) {
       KagiDependencySet.empty
