@@ -30,8 +30,6 @@ import java.nio.file.Files
  */
 object KagiPlugin extends AutoPlugin {
 
-  // TODO: WIP review the README example code
-
   object autoImport {
     val kagiDependencyLockDir: SettingKey[File] = settingKey(
       "Directory where lock files are stored. Defaults to 'dependency-lock/' at the build root.",

@@ -87,7 +87,8 @@ on [Maven Central](https://central.sonatype.com/artifact/com.evolution/sbt-kagi-
 Enable `KagiPlugin` on the modules you want to lock dependencies for:
 
 ```scala
-lazy val myProject = (project in file("."))
+lazy val myProject = project
+  .in(file("."))
   .enablePlugins(KagiPlugin)
   .settings(
     libraryDependencies += "com.google.guava" % "guava" % "33.4.0-jre",
@@ -156,7 +157,8 @@ To lock only the `Compile` classpath (excluding runtime-only dependencies), over
 setting:
 
 ```scala
-lazy val myProject = (project in file("."))
+lazy val myProject = project
+  .in(file("."))
   .enablePlugins(KagiPlugin)
   .settings(
     kagiDependencyLockClasspath := Compile,
@@ -186,11 +188,13 @@ Add `kagiDependencyLockCheck` to your CI pipeline to catch unintended dependency
 Enable `KagiPlugin` on each module you want to lock. Each module gets its own lock file named after the module:
 
 ```scala
-lazy val core = (project in file("core"))
+lazy val core = project
+  .in(file("core"))
   .enablePlugins(KagiPlugin)
   .settings(/* ... */)
 
-lazy val app = (project in file("app"))
+lazy val app = project
+  .in(file("app"))
   .enablePlugins(KagiPlugin)
   .dependsOn(core)
   .settings(/* ... */)
