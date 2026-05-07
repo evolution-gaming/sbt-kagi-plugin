@@ -61,13 +61,18 @@ private[kagi] object KagiLockFile {
     if (Files.notExists(filePath)) {
       KagiDependencySet.empty
     } else {
-      KagiDependencySet.from(
-        Files.lines(filePath, StandardCharsets.UTF_8).iterator().asScala
-          .map(_.strip())
-          .filter(!_.startsWith("#"))
-          .filter(_.nonEmpty)
-          .map(KagiDependency.parse),
-      )
+      val lineStream = Files.lines(filePath, StandardCharsets.UTF_8)
+      try {
+        KagiDependencySet.from(
+          lineStream.iterator().asScala
+            .map(_.strip())
+            .filter(!_.startsWith("#"))
+            .filter(_.nonEmpty)
+            .map(KagiDependency.parse),
+        )
+      } finally {
+        lineStream.close()
+      }
     }
   }
 }
