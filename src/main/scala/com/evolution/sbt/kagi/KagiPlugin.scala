@@ -34,19 +34,19 @@ object KagiPlugin extends AutoPlugin {
 
   object autoImport {
     val kagiDependencyLockDir: SettingKey[File] = settingKey(
-      "FIXME",
+      "Directory where lock files are stored. Defaults to 'dependency-lock/' at the build root.",
     )
     val kagiDependencyLockFile: SettingKey[File] = settingKey(
-      "FIXME",
+      "Path to the lock file for the current module. Defaults to '<kagiDependencyLockDir>/<module-name>.lock.txt'.",
     )
     val kagiDependencyLockClasspath: SettingKey[Configuration] = settingKey(
       "Configuration used to resolve the dependency classpath for lock file generation. Defaults to Runtime.",
     )
     val kagiDependencyLockWrite: TaskKey[Unit] = taskKey(
-      "FIXME",
+      "Resolve the dependency classpath and write (or overwrite) the lock file for the current module.",
     )
     val kagiDependencyLockCheck: TaskKey[Unit] = taskKey(
-      "FIXME",
+      "Resolve the dependency classpath and compare it to the existing lock file. Fails the build if they differ.",
     )
   }
 
