@@ -120,9 +120,9 @@ object KagiPlugin extends AutoPlugin {
   }
 
   private def extractDependency(classpathElem: Attributed[?]): KagiDependency = {
-    val modelId = getModelIdAttr(classpathElem).getOrElse(sys.error(
+    val moduleID = getModuleIdAttr(classpathElem).getOrElse(sys.error(
       s"classpath element missing module ID attribute: $classpathElem",
     ))
-    KagiDependency.fromModuleId(modelId)
+    KagiDependency.fromModuleId(moduleID)
   }
 }

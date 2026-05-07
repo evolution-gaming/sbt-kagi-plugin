@@ -6,7 +6,7 @@ import sbt.*
  * Cross-sbt-version compat code - sbt 2 version.
  */
 private[kagi] object KagiSbtCompat {
-  def getModelIdAttr(attributed: Attributed[?]): Option[ModuleID] = {
+  def getModuleIdAttr(attributed: Attributed[?]): Option[ModuleID] = {
     attributed.get(Keys.moduleIDStr).map(Classpaths.moduleIdJsonKeyFormat.read)
   }
 }
