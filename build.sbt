@@ -80,6 +80,11 @@ scalacOptions ++= Seq(
   "-deprecation",
 )
 
+dependencyOverrides ++= Seq("builtins", "native", "reader", "style", "terminal", "terminal-jni")
+  .map(m => "org.jline" % s"jline-$m" % "3.30.17")
+dependencyOverrides ++= Seq("api", "core", "slf4j-impl")
+  .map(m => "org.apache.logging.log4j" % s"log4j-$m" % "2.25.5")
+
 libraryDependencies += "org.scalameta" %% "munit" % "1.3.6" % Test
 // disable parallel test execution and bufferization to have nice linear stdout:
 // https://scalameta.org/munit/docs/tests.html#run-tests-in-parallel
