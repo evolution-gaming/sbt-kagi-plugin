@@ -35,7 +35,7 @@ jobs:
           java-version-file: .java-version
           distribution: temurin
       # setup-sbt has no option to disable restoring the sbt runner itself from the cache
-      - uses: sbt/setup-sbt@ecad189dd245444b9ae0a0cd5922fd938b88906f # v1.5.12
+      - uses: sbt/setup-sbt@b113b960ba361e87e08ce02a390d51871b7ee459 # v1.5.13
         with:
           disk-cache: false
       # sbt ci-release doesn't verify the build, need to do it explicitly
